@@ -1,0 +1,15 @@
+services:
+    Bicycle\Tesseract\Bridge\Configuration:
+        lazy: true
+        arguments:
+            - [] # We will replace argument in configuration
+
+    Bicycle\Tesseract\Bridge\CLI:
+        lazy: true
+        arguments:
+            - '@Bicycle\Tesseract\Bridge\Configuration'
+
+    Bicycle\Tesseract\Bridge\FFI:
+      lazy: true
+      arguments:
+            - '@Bicycle\Tesseract\Bridge\Configuration'

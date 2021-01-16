@@ -1,0 +1,47 @@
+{
+  "name": "bicycle/tesseract-bridge-bundle",
+  "license": "MIT",
+  "description": "Symfony bundle for integration with tesseract bridge ",
+  "type": "symfony-bundle",
+  "keywords": ["tesseract", "bridge", "symfony"],
+  "authors": [
+    {
+      "name": "Vladimir Khramtsov",
+      "homepage": "https://github.com/vkhramtsov",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/vkhramtsov/tesseract-bridge-bundle/issues"
+  },
+  "require": {
+    "php": ">7.4.0",
+    "bicycle/tesseract-bridge": "^0.100",
+    "symfony/config": "^4.4.18 || ^5.2",
+    "symfony/dependency-injection": "^4.4.18 || ^5.2",
+    "symfony/http-kernel": "^4.4.18 || ^5.2",
+    "symfony/yaml": "^4.4.18 || ^5.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bicycle\\TesseractBridgeBundle\\": ""
+    }
+  },
+  "suggest": {
+  },
+  "config": {
+    "preferred-install": {
+      "*": "dist"
+    },
+    "sort-packages": true
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^2.17.3",
+    "phing/phing": "^2.16.3",
+    "phpmd/phpmd": "^2.9.1",
+    "phpunit/phpunit": "^9.5.0",
+    "sebastian/phpcpd": "^6.0.3",
+    "squizlabs/php_codesniffer": "^3.5.8",
+    "vimeo/psalm": "^4.4.1"
+  }
+}

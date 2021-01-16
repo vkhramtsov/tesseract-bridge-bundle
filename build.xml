@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<project name="tesseract-bridge-bundle" default="build" basedir="." description="Tesseract bridge build plan">
+    <property name="project-resources-dir" value="Resources" />
+    <property name="project-resources-configs-dir" value="${project-resources-dir}/configs"/>
+    <property name="project-resources-configs-phpmd-dir" value="${project-resources-configs-dir}/phpmd"/>
+    <property name="project-file-config-phpmd" value="${project-resources-configs-phpmd-dir}/phpmd.xml"/>
+    <property name="project-vendor-dir" value="vendor" />
+    <property name="project-vendor-bin-dir" value="vendor/bin" />
+    <property name="project-src-dir" value="." />
+    <property name="project-tests-dir" value="tests" />
+    <property name="php-bin" value="php" />
+    <property name="project-composer-phar" value="composer.phar" />
+    <property name="php-cs-fixer-bin" value="${project-vendor-bin-dir}/php-cs-fixer" />
+
+    <!-- Filesets -->
+    <fileset dir="${project-src-dir}" id="src-php">
+        <include name="DependencyInjection/**/*.php"/>
+        <include name="BicycleTesseractBridgeBundle.php" />
+    </fileset>
+
+    <!-- /Filesets -->
+
+    <target name="initialize-autoload" description="Initialize autoloader">
+        <autoloader />
+    </target>
+
+    <target name="composer-validate" description="Validate composer file">
+        <composer composer="${project-composer-phar}" command="validate" />
+    </target>
+
+    <target name="phplint" description="Perform syntax check of sourcecode files">
+        <phplint  haltonfailure="true" deprecatedAsError="true">
+            <fileset refid="src-php"/>
+        </phplint>
+    </target>
+
+    <target name="php-cs-fixer" description="Fixes most issues in code as defined in the PSR-1 and PSR-2 documents">
+        <exec executable="${php-bin}" logoutput="true">
+            <arg path="${php-cs-fixer-bin}" />
+            <arg value="fix"/>
+        </exec>
+    </target>
+
+    <target name="phpmd" description="Run phpmd checks" depends="initialize-autoload">
+        <phpmd rulesets="${project-file-config-phpmd}">
+            <fileset refid="src-php"/>
+        </phpmd>
+    </target>
+
+    <target name="phpcs" description="Run code style checks" depends="initialize-autoload">
+        <exec executable="${project-vendor-bin-dir}/phpcs" dir="." checkReturn="false" outputProperty="phpcs-results" returnProperty="phpcs-return" >
+            <arg value="--standard=PSR12" />
+            <arg value="${project-src-dir}/DependencyInjection" />
+            <arg value="${project-src-dir}/BicycleTesseractBridgeBundle.php" />
+            <arg value="${project-src-dir}/Tests" />
+        </exec>
+        <echo message="${phpcs-results}" />
+        <if>
+            <istrue value="${phpcs-return}" />
+            <then>
+                <fail /> <!-- fail build in case of errors -->
+            </then>
+        </if>
+    </target>
+
+    <target name="phpcpd" description="Find code duplicates">
+        <exec executable="${php-bin}" logoutput="true" checkreturn="true">
+            <arg path="${project-vendor-bin-dir}/phpcpd" />
+            <arg value="--exclude" />
+            <arg value="${project-vendor-dir}" />
+            <arg value="${project-src-dir}" />
+        </exec>
+    </target>
+
+    <target name="psalm" description="Run static code analysis">
+        <exec executable="${project-vendor-bin-dir}/psalm" dir="." checkReturn="false" outputProperty="psalm-results" returnProperty="psalm-return">
+            <arg value="--show-info=true" />
+        </exec>
+        <echo message="${psalm-results}" />
+        <if>
+            <istrue value="${psalm-return}" />
+            <then>
+                <fail /> <!-- fail build in case of errors -->
+            </then>
+        </if>
+    </target>
+
+    <target name="phpunit" description="Run tests">
+        <!-- Using exec here because phing cannot find phpunit -->
+        <exec executable="${php-bin}" dir="." checkReturn="false" outputProperty="phpunit-results" returnProperty="phpunit-return" >
+            <!--            <arg value="-d=xdebug.mode=coverage" />--> <!-- We need this only with xdebug version 3 and above -->
+            <arg value="${project-vendor-bin-dir}/phpunit" />
+        </exec>
+        <echo message="${phpunit-results}" />
+        <if>
+            <istrue value="${phpunit-return}" />
+            <then>
+                <fail /> <!-- fail build in case of errors -->
+            </then>
+        </if>
+    </target>
+
+    <target name="dependencies-list-outdated" description="Check for new versions of dependencies">
+        <composer composer="${project-composer-phar}" command="outdated">
+            <arg value="-D"/>
+        </composer>
+    </target>
+
+    <target name="build" description="Runs build locally" depends="composer-validate, phplint, php-cs-fixer, phpcs,
+    phpmd, phpcpd, psalm, phpunit, dependencies-list-outdated" />
+
+</project>

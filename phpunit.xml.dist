@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" backupGlobals="false" cacheResult="false" colors="true">
+  <php>
+    <ini name="error_reporting" value="-1"/>
+  </php>
+  <testsuites>
+    <testsuite name="Main">
+      <directory>./Tests/</directory>
+      <directory>./Tests/*/</directory>
+    </testsuite>
+  </testsuites>
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">DependencyInjection</directory>
+      <file>BicycleTesseractBridgeBundle.php</file>
+    </include>
+    <exclude>
+      <directory>vendor</directory>
+    </exclude>
+    <report>
+      <clover outputFile="clover.xml"/>
+    </report>
+  </coverage>
+</phpunit>
