@@ -1,0 +1,40 @@
+language: php
+
+php:
+  - 7.4
+  - 8.0
+
+# Note that PHP_CS_FIXER_IGNORE_ENV=1 is defined because php-cs-fixer complains about php higher than 8.0.
+# Remove it after closing https://github.com/FriendsOfPHP/PHP-CS-Fixer/issues/4702
+env:
+  - PREFER_LOWEST=1 PHP_CS_FIXER_IGNORE_ENV=1
+  - PREFER_LOWEST=0 PHP_CS_FIXER_IGNORE_ENV=1
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+os:
+  - linux
+
+branches:
+  only:
+    - master
+
+before_script:
+  - composer validate
+  - composer install
+  - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest; fi
+  - ! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"
+
+script:
+  - php vendor/bin/php-cs-fixer fix --dry-run --diff
+  - php vendor/bin/phpcs DependencyInjection BicycleTesseractBridgeBundle.php --standard=PSR12
+  - php vendor/bin/phpmd . text Resources/configs/phpmd/phpmd.xml --exclude vendor
+  - php vendor/bin/psalm --show-info=true
+  - php vendor/bin/phpcpd --exclude vendor .
+  - php -d=xdebug.mode=coverage vendor/bin/phpunit
+  - composer outdated -D
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

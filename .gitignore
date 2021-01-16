@@ -1,0 +1,13 @@
+###> IDE files ###
+/.idea/
+###< IDE files ###
+
+###> Composer related###
+/composer.phar
+/composer.lock
+/vendor/
+###< Composer related ###
+
+###> Utility files ###
+/clover.xml
+###< Utility files ###
