@@ -6,6 +6,28 @@ Symfony bundle for integration with ``bicycle/tesseract-bridge`` package
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/vkhramtsov/tesseract-bridge-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/vkhramtsov/tesseract-bridge-bundle/?branch=master)
 [![License](https://img.shields.io/packagist/l/bicycle/tesseract-bridge-bundle.svg)](https://packagist.org/packages/bicycle/tesseract-bridge-bundle)
 
+## Installation
+
+First af all you need to creeate configuration, something like:
+
+    bicycle_tesseract_bridge:
+      integrations:
+        cli:
+          path: tesseract
+        ffi: # Please note that FFI integration depends on php settings and not available in fpm by default
+          path: libtesseract.so.4
+
+And install bundle via [Composer](https://getcomposer.org/):
+
+    $ composer require bicycle/tesseract-bridge-bundle
+
+## Usage
+
+Depend on the configuration you will get services which implement ``Bicycle\Tesseract\BridgeInterface``:
+
+-   **bicycle.tesseract_bridge.integrations.cli** for CLI integration (in case enabled)
+-   **bicycle.tesseract_bridge.integrations.ffi** for FFI integration (in case enabled)
+
 ## How to contribute
 
 You can contribute to this project by:

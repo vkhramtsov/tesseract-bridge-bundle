@@ -2,7 +2,8 @@
 
 namespace Bicycle\TesseractBridgeBundle\Tests\DependencyInjection;
 
-use Bicycle\Tesseract\Bridge\Configuration;
+use Bicycle\Tesseract\Bridge;
+use Bicycle\TesseractBridgeBundle\DataCollector\TesseractBridgeDataCollector;
 use Bicycle\TesseractBridgeBundle\DependencyInjection\BicycleTesseractBridgeExtension;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -97,6 +98,29 @@ class BicycleTesseractBridgeExtensionTest extends TestCase
     {
         $cliPath = 'cli test path';
         $ffiPath = 'ffi test path';
+        $config = [
+            'bicycle_tesseract_bridge' => [
+                'integrations' => [
+                    'cli' => [
+                        'enabled' => true,
+                        'path' => $cliPath,
+                    ],
+                    'ffi' => [
+                        'enabled' => true,
+                        'path' => $ffiPath,
+                    ],
+                ],
+            ],
+        ];
+
+        $bridgeCliDefMock = clone $this->serviceDefMock;
+        $bridgeFfiDefMock = clone $this->serviceDefMock;
+
+        $collectorDefMock = clone $this->serviceDefMock;
+        $collectorDefMock
+            ->expects(self::exactly(4))
+            ->method('replaceArgument')
+            ->withConsecutive([2, $config['bicycle_tesseract_bridge']], [0, $bridgeCliDefMock], [1, $bridgeFfiDefMock]);
 
         $this
             ->serviceDefMock
@@ -106,26 +130,134 @@ class BicycleTesseractBridgeExtensionTest extends TestCase
 
         $this->containerMock->expects(self::once())->method('fileExists')->willReturn(false);
         $this->containerMock
-            ->expects(self::once())
+            ->expects(self::exactly(4))
             ->method('getDefinition')
-            ->with(Configuration::class)
-            ->willReturn($this->serviceDefMock);
+            ->withConsecutive(
+                [TesseractBridgeDataCollector::class],
+                ['bicycle.tesseract_bridge.integrations.cli'],
+                ['bicycle.tesseract_bridge.integrations.ffi'],
+                [Bridge\Configuration::class]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $collectorDefMock,
+                $bridgeCliDefMock,
+                $bridgeFfiDefMock,
+                $this->serviceDefMock
+            );
 
         self::assertInstanceOf(DependencyInjection\Extension\Extension::class, $this->testInstance);
+        $this->testInstance->load($config, $this->containerMock);
+    }
+
+    public function testLoadOnlyCliEnabled(): void
+    {
+        $cliPath = 'cli test path';
         $config = [
             'bicycle_tesseract_bridge' => [
                 'integrations' => [
                     'cli' => [
-                            'enabled' => true,
-                            'path' => $cliPath,
-                        ],
+                        'enabled' => true,
+                        'path' => $cliPath,
+                    ],
                     'ffi' => [
-                            'enabled' => true,
-                            'path' => $ffiPath,
-                        ],
+                        'enabled' => false,
+                        'path' => null,
+                    ],
                 ],
             ],
         ];
+
+        $bridgeCliDefMock = clone $this->serviceDefMock;
+
+        $collectorDefMock = clone $this->serviceDefMock;
+        $collectorDefMock
+            ->expects(self::exactly(3))
+            ->method('replaceArgument')
+            ->withConsecutive([2, $config['bicycle_tesseract_bridge']], [0, $bridgeCliDefMock]);
+
+        $this
+            ->serviceDefMock
+            ->expects(self::once())
+            ->method('replaceArgument')
+            ->with(0, ['binary_path' => $cliPath]);
+
+        $this->containerMock->expects(self::once())->method('fileExists')->willReturn(false);
+        $this->containerMock
+            ->expects(self::exactly(3))
+            ->method('getDefinition')
+            ->withConsecutive(
+                [TesseractBridgeDataCollector::class],
+                ['bicycle.tesseract_bridge.integrations.cli'],
+                [Bridge\Configuration::class]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $collectorDefMock,
+                $bridgeCliDefMock,
+                $this->serviceDefMock
+            );
+        $this
+            ->containerMock
+            ->expects(self::once())
+            ->method('removeDefinition')
+            ->with('bicycle.tesseract_bridge.integrations.ffi');
+
+        self::assertInstanceOf(DependencyInjection\Extension\Extension::class, $this->testInstance);
+        $this->testInstance->load($config, $this->containerMock);
+    }
+
+    public function testLoadOnlyFfiEnabled(): void
+    {
+        $ffiPath = 'ffi test path';
+        $config = [
+            'bicycle_tesseract_bridge' => [
+                'integrations' => [
+                    'cli' => [
+                        'enabled' => false,
+                        'path' => null,
+                    ],
+                    'ffi' => [
+                        'enabled' => true,
+                        'path' => $ffiPath,
+                    ],
+                ],
+            ],
+        ];
+
+        $bridgeFfiDefMock = clone $this->serviceDefMock;
+
+        $collectorDefMock = clone $this->serviceDefMock;
+        $collectorDefMock
+            ->expects(self::exactly(3))
+            ->method('replaceArgument')
+            ->withConsecutive([2, $config['bicycle_tesseract_bridge']], [1, $bridgeFfiDefMock]);
+
+        $this
+            ->serviceDefMock
+            ->expects(self::once())
+            ->method('replaceArgument')
+            ->with(0, ['library_path' => $ffiPath]);
+
+        $this->containerMock->expects(self::once())->method('fileExists')->willReturn(false);
+        $this->containerMock
+            ->expects(self::exactly(3))
+            ->method('getDefinition')
+            ->withConsecutive(
+                [TesseractBridgeDataCollector::class],
+                ['bicycle.tesseract_bridge.integrations.ffi'],
+                [Bridge\Configuration::class]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $collectorDefMock,
+                $bridgeFfiDefMock,
+                $this->serviceDefMock
+            );
+        $this
+            ->containerMock
+            ->expects(self::once())
+            ->method('removeDefinition')
+            ->with('bicycle.tesseract_bridge.integrations.cli');
+
+        self::assertInstanceOf(DependencyInjection\Extension\Extension::class, $this->testInstance);
         $this->testInstance->load($config, $this->containerMock);
     }
 }

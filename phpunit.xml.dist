@@ -11,6 +11,7 @@
   </testsuites>
   <coverage processUncoveredFiles="true">
     <include>
+      <directory suffix=".php">DataCollector</directory>
       <directory suffix=".php">DependencyInjection</directory>
       <file>BicycleTesseractBridgeBundle.php</file>
     </include>
