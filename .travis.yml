@@ -22,10 +22,10 @@ branches:
     - master
 
 before_script:
+  - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
   - composer validate
   - composer install
   - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest; fi
-  - ! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"
 
 script:
   - php vendor/bin/php-cs-fixer fix --dry-run --diff
@@ -38,3 +38,4 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh) report
