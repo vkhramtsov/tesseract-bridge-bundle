@@ -1,15 +1,30 @@
+parameters:
+    bicycle.tesseract_bridge.integrations.cli.class: 'Bicycle\Tesseract\Bridge\CLI'
+    bicycle.tesseract_bridge.integrations.ffi.class: 'Bicycle\Tesseract\Bridge\FFI'
+
 services:
     Bicycle\Tesseract\Bridge\Configuration:
         lazy: true
         arguments:
-            - [] # We will replace argument in configuration
+            - [] # We will replace argument in extension
 
-    Bicycle\Tesseract\Bridge\CLI:
+    bicycle.tesseract_bridge.integrations.cli:
+        class: '%bicycle.tesseract_bridge.integrations.cli.class%'
         lazy: true
         arguments:
             - '@Bicycle\Tesseract\Bridge\Configuration'
 
-    Bicycle\Tesseract\Bridge\FFI:
+    bicycle.tesseract_bridge.integrations.ffi:
+      class: '%bicycle.tesseract_bridge.integrations.ffi.class%'
       lazy: true
       arguments:
             - '@Bicycle\Tesseract\Bridge\Configuration'
+
+    Bicycle\TesseractBridgeBundle\DataCollector\TesseractBridgeDataCollector:
+      lazy: true
+      arguments:
+        - null # We will replace argument in extension with CLI integration service (if configured)
+        - null # We will replace argument in extension with FFI integration service (if configured)
+        - [] # We will replace argument in extension with configuration
+      tags:
+        - { name: 'data_collector', template: '@BicycleTesseractBridge/Collector/tesseract_bridge.html.twig', id: !php/const Bicycle\TesseractBridgeBundle\DataCollector\TesseractBridgeDataCollector::NAME, priority: -256 }

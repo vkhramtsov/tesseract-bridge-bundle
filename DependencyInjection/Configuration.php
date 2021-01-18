@@ -29,7 +29,7 @@ class Configuration implements Definition\ConfigurationInterface
                                         ->defaultNull()
                                         ->example('tesseract')
                                         ->info('Path to tesseract cli binary. ' .
-                                            'It could be just "tesseract" in case binary in PATH or relative/absolute')
+                                            'It could be just "tesseract" in case binary in PATH or relative/absolute.')
                                     ->end()
                                 ->end()
                             ->end()
@@ -40,7 +40,7 @@ class Configuration implements Definition\ConfigurationInterface
                                         ->defaultNull()
                                         ->example('libtesseract.so.4')
                                         ->info('Path to tesseract shared library. It could be' .
-                                            'just "libtesseract.so.4" in case library is in PATH or relative/absolute')
+                                            'just "libtesseract.so.4" in case library is in PATH or relative/absolute.')
                                     ->end()
                                 ->end()
                             ->end()

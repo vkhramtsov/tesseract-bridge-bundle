@@ -51,6 +51,7 @@
         <exec executable="${project-vendor-bin-dir}/phpcs" dir="." checkReturn="false" outputProperty="phpcs-results" returnProperty="phpcs-return" >
             <arg value="--standard=PSR12" />
             <arg value="${project-src-dir}/DependencyInjection" />
+            <arg value="${project-src-dir}/DataCollector" />
             <arg value="${project-src-dir}/BicycleTesseractBridgeBundle.php" />
             <arg value="${project-src-dir}/Tests" />
         </exec>

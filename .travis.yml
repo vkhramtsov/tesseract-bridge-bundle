@@ -29,7 +29,7 @@ before_script:
 
 script:
   - php vendor/bin/php-cs-fixer fix --dry-run --diff
-  - php vendor/bin/phpcs DependencyInjection BicycleTesseractBridgeBundle.php --standard=PSR12
+  - php vendor/bin/phpcs DependencyInjection DataCollector BicycleTesseractBridgeBundle.php --standard=PSR12
   - php vendor/bin/phpmd . text Resources/configs/phpmd/phpmd.xml --exclude vendor
   - php vendor/bin/psalm --show-info=true
   - php vendor/bin/phpcpd --exclude vendor .
