@@ -41,6 +41,15 @@
         </exec>
     </target>
 
+    <target name="php-cs-fixer-ci" description="Fixes most issues in code as defined in the PSR-1 and PSR-2 documents">
+        <exec executable="${php-bin}" logoutput="true">
+            <arg path="${php-cs-fixer-bin}" />
+            <arg value="fix"/>
+            <arg value="--dry-run" />
+            <arg value="--diff" />
+        </exec>
+    </target>
+
     <target name="phpmd" description="Run phpmd checks" depends="initialize-autoload">
         <phpmd rulesets="${project-file-config-phpmd}">
             <fileset refid="src-php"/>
@@ -89,7 +98,21 @@
     <target name="phpunit" description="Run tests">
         <!-- Using exec here because phing cannot find phpunit -->
         <exec executable="${php-bin}" dir="." checkReturn="false" outputProperty="phpunit-results" returnProperty="phpunit-return" >
-            <!--            <arg value="-d=xdebug.mode=coverage" />--> <!-- We need this only with xdebug version 3 and above -->
+            <arg value="${project-vendor-bin-dir}/phpunit" />
+        </exec>
+        <echo message="${phpunit-results}" />
+        <if>
+            <istrue value="${phpunit-return}" />
+            <then>
+                <fail /> <!-- fail build in case of errors -->
+            </then>
+        </if>
+    </target>
+
+    <target name="phpunit-ci" description="Run tests">
+        <!-- Using exec here because phing cannot find phpunit -->
+        <exec executable="${php-bin}" dir="." checkReturn="false" outputProperty="phpunit-results" returnProperty="phpunit-return" >
+            <arg value="-d=xdebug.mode=coverage" />
             <arg value="${project-vendor-bin-dir}/phpunit" />
         </exec>
         <echo message="${phpunit-results}" />
@@ -109,5 +132,8 @@
 
     <target name="build" description="Runs build locally" depends="composer-validate, phplint, php-cs-fixer, phpcs,
     phpmd, phpcpd, psalm, phpunit, dependencies-list-outdated" />
+
+    <target name="build-ci" description="Run CI build" depends="phplint, php-cs-fixer-ci, phpcs, phpmd, phpcpd, psalm,
+    phpunit-ci" />
 
 </project>

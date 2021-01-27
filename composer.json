@@ -1,8 +1,10 @@
 {
   "name": "bicycle/tesseract-bridge-bundle",
-  "license": "MIT",
   "description": "Symfony bundle for integration with tesseract bridge ",
   "type": "symfony-bundle",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "keywords": ["tesseract", "bridge", "symfony"],
   "authors": [
     {
@@ -37,7 +39,7 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.17.3",
-    "phing/phing": "^2.16.3",
+    "phing/phing": "dev-master",
     "phpmd/phpmd": "^2.9.1",
     "phpunit/phpunit": "^9.5.0",
     "sebastian/phpcpd": "^6.0.3",

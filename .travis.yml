@@ -22,18 +22,12 @@ branches:
     - master
 
 before_script:
-  - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
   - composer validate
   - composer install
   - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest; fi
 
 script:
-  - php vendor/bin/php-cs-fixer fix --dry-run --diff
-  - php vendor/bin/phpcs DependencyInjection DataCollector BicycleTesseractBridgeBundle.php --standard=PSR12
-  - php vendor/bin/phpmd . text Resources/configs/phpmd/phpmd.xml --exclude vendor
-  - php vendor/bin/psalm --show-info=true
-  - php vendor/bin/phpcpd --exclude vendor .
-  - php -d=xdebug.mode=coverage vendor/bin/phpunit
+  - php vendor/bin/phing build-ci
   - composer outdated -D
 
 after_success:
