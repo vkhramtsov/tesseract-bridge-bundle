@@ -27,7 +27,7 @@ before_script:
   - if [[ $PREFER_LOWEST == 1 ]]; then composer update --prefer-lowest; fi
 
 script:
-  - php vendor/bin/phing build-ci
+  - php phing.phar build-ci
   - composer outdated -D
 
 after_success:
