@@ -39,7 +39,6 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.17.3",
-    "phing/phing": "dev-master",
     "phpmd/phpmd": "^2.9.1",
     "phpunit/phpunit": "^9.5.0",
     "sebastian/phpcpd": "^6.0.3",
