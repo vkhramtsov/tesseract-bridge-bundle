@@ -12,7 +12,7 @@ Symfony bundle for integration with ``bicycle/tesseract-bridge`` package
 
 ## Installation
 
-First af all you need to creeate configuration, something like:
+First af all you need to create configuration, something like:
 
     bicycle_tesseract_bridge:
       integrations:
